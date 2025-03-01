@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "path": "/data/coding"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/*.code-workspace": true
+    },
+    "workbench.startupEditor": "readme",
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.formatOnSave": true
+  }
+}
