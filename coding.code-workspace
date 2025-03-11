@@ -6,6 +6,17 @@
 	],
 	"settings": {
 		"editor.defaultFormatter": "ms-python.autopep8",
-		"editor.formatOnSave": true
+		"editor.formatOnSave": true,
+		"[json]": {
+			"editor.quickSuggestions": {
+				"strings": true
+			},
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.formatOnSave": true
+		},
+		"autopep8.args": [
+			"--ignore",
+			"E402"
+		]
 	}
 }
