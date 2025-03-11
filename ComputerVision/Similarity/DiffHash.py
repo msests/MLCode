@@ -5,18 +5,40 @@ import matplotlib.pyplot as plt
 
 post_transform = transforms.Compose([
     transforms.Grayscale(num_output_channels=1),
-    transforms.Resize((8, 8)),
+    transforms.Resize((8, 9)),
     transforms.ToTensor(),
 ])
 
 dataset = torchvision.datasets.CIFAR10(
     root="../data", train=True, download=True)
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def hash_image(image: torch.Tensor):
+
+def image_diff_hash(image: torch.Tensor):
     hash = 0
+    for i in range(8):
+        for j in range(8):
+            if image[i][j] > image[i][j + 1]:
+                hash |= (1 << (i * 8 + j))
+
+    print(hash)
+
+    return hash
+
+
+def image_diff_hash_opt(image: torch.Tensor):
+    hash = 0
+
+    image = image.to(device)
+
+    left = image[:, :-1]
+    right = image[:, 1:]
+    diff = left - right
+
+    hash_cpu = diff.flatten().cpu()
     for i in range(64):
-        if image[i] > 0.5:
+        if hash_cpu[i] > 0:
             hash |= (1 << i)
 
     return hash
@@ -31,7 +53,7 @@ hashs = []
 for i, item in enumerate(dataset):
     if i == 10000:
         break
-    hashs.append(hash_image(post_transform(item[0]).flatten()))
+    hashs.append(image_diff_hash_opt(post_transform(item[0]).squeeze(0)))
 
 min_dis = 2**32 - 1
 min_pair = None
@@ -47,4 +69,5 @@ for i in range(10000):
 fig, axs = plt.subplots(1, 2)
 axs[0].imshow(dataset[min_pair[0]][0])
 axs[1].imshow(dataset[min_pair[1]][0])
-plt.show()
+plt.savefig("dhash_result.png")
+plt.close()
